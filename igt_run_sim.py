@@ -5,12 +5,12 @@ import datetime
 import time
 class IgtFun:
         global CMD_PREFIX,IGT_DIR
-        IGT_DIR='"echo vpgba | sudo -S /home/vpgba/otc_gen_graphics-intel-gpu-tools_ww20/build/'
+        IGT_DIR='"echo vpgba | sudo -S /home/vpgba/Lohith/ww26/new/otc_gen_graphics-intel-gpu-tools/build/'
         CMD_PREFIX='sshpass -p "vpgba" ssh -p 1340 vpgba@localhost '
         def Modprobe(self):
                 os.system('sshpass -p "vpgba" ssh -p 1340 vpgba@localhost "echo vpgba | sudo -S /home/vpgba/modprobe.sh"')
         def ListSubTest(self,ts,s):
-                cmd=CMD_PREFIX + IGT_DIR +('tests/%s --list-subtests"'%ts)                
+                cmd=CMD_PREFIX + IGT_DIR +('tests/%s --l"'%ts)                
                 x=os.popen("%(cmd)s" % locals())
                 if s == "-FS":
                         l=open("subtest.txt",'w')
@@ -37,7 +37,7 @@ class IgtFun:
                 log.close()
         def SubTest(self,test,subtest,s):
                 os.system('mkdir -p test_temp')
-                cmd=CMD_PREFIX + IGT_DIR +("tests/%s"%test)+ ' --run-subtest '+("%s\"" %subtest)                       
+                cmd=CMD_PREFIX + IGT_DIR +("tests/%s"%test)+ ' --r '+("%s\"" %subtest)                       
                 start=datetime.datetime.now()           
                 process=Popen(cmd, stdout=PIPE, stderr=PIPE,shell=True)
                 stdout, stderr =process.communicate()
@@ -56,12 +56,13 @@ class IgtFun:
                         ex=('grep \"Subtest %s:\" test_temp/%s_FS.txt'%(subtest,test))
                 y=os.popen("%(ex)s"%locals())
                 y1=str(y.read())
+		y1=y1.replace("\n","")
                 print ("\ntest : %s %s time:%s\n" %(test,y1,exec_time))
-#                lg=open("time_s.log",'a')
-#                lg.write("\n%s time : %s"%(subtest,exec_time))
-#                lg.close()
+                lg=open("time_s.log",'a')
+                lg.write("\n%s time : %s"%(subtest,exec_time))
+                lg.close()
                 log=open("time.log",'a')
-                log.write("\ntime: %s %s"%(exec_time,y1))
+		log.write("\nSubtest: %s time: %s "%(y1,exec_time))
                 log.close()
                 return (exec_time)
         def Time_Space(self,t):
@@ -97,6 +98,7 @@ if __name__ == "__main__":
                         f.Time_Space(cmd_ts)
                         total_time=datetime.timedelta(seconds=0)
                         for i in x1:
+				i=i.replace("\n","")
                                 x = (f.SubTest(sys.argv[2],i,n))
                                 print(x)
                                 total_time=total_time + x
